@@ -1,0 +1,38 @@
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  dispatcher:
+    image: semtech/mu-dispatcher:2.1.1
+    volumes:
+      - ./config/dispatcher:/config
+    labels:
+      - "logging=true"
+    restart: always
+    logging: *default-logging
+  cadvisor:
+    image: ghcr.io/google/cadvisor:0.56.2
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    logging: *default-logging
+    restart: always
+  exporter:
+    image: quay.io/prometheus/node-exporter:v1.10.2
+    pid: "host"
+    volumes:
+      - /sys:/sys:ro
+      - /dev/disk/:/dev/disk:ro
+      - /etc/os-release:/etc/os-release:ro
+    command:
+      - --collector.os
+    logging: *default-logging
+    restart: always
