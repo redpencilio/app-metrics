@@ -36,3 +36,19 @@ services:
       - --collector.os
     logging: *default-logging
     restart: always
+  aptmetrics:
+    image: redpencil/apt-metrics
+    logging: *default-logging
+    restart: always
+    volumes:
+      # Host apt/dpkg state (read-only)
+      - /var/lib/apt:/var/lib/apt:ro
+      - /var/lib/dpkg:/var/lib/dpkg:ro
+      - /etc/apt:/etc/apt:ro
+      - /var/cache/apt:/var/cache/apt:ro
+      # Reboot-required flag
+      - /var/run/reboot-required:/var/run/reboot-required:ro
+      # Shared textfile collector volume
+      - ./data/apt-metrics/:/var/lib/node_exporter/textfile_collector
+      # Persistent cache for CVE priority lookups (survives recreates)
+      - ./data/security_metrics_cache:/var/cache/security-updates-metrics
