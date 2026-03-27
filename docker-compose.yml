@@ -47,7 +47,7 @@ services:
       - /etc/apt:/etc/apt:ro
       - /var/cache/apt:/var/cache/apt:ro
       # Reboot-required flag
-      - /var/run/reboot-required:/var/run/reboot-required:ro
+      - /var/run/:/host/var/run/:ro
       # Shared textfile collector volume
       - ./data/apt-metrics/:/var/lib/node_exporter/textfile_collector
       # Persistent cache for CVE priority lookups (survives recreates)
