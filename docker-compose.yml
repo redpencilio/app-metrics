@@ -25,17 +25,6 @@ services:
       - /dev/kmsg:/dev/kmsg
     logging: *default-logging
     restart: always
-  exporter:
-    image: quay.io/prometheus/node-exporter:v1.10.2
-    pid: "host"
-    volumes:
-      - /sys:/sys:ro
-      - /dev/disk/:/dev/disk:ro
-      - /etc/os-release:/etc/os-release:ro
-    command:
-      - --collector.os
-    logging: *default-logging
-    restart: always
   apt-metrics:
     image: redpencil/apt-metrics
     volumes:
@@ -50,5 +39,18 @@ services:
       - ./data/apt-metrics/:/var/lib/node_exporter/textfile_collector
       # Persistent cache for CVE priority lookups (survives recreates)
       - ./data/security-metrics-cache:/var/cache/security-updates-metrics
+    logging: *default-logging
+    restart: always
+  exporter:
+    image: quay.io/prometheus/node-exporter:v1.10.2
+    pid: "host"
+    volumes:
+      - /sys:/sys:ro
+      - /dev/disk/:/dev/disk:ro
+      - /etc/os-release:/etc/os-release:ro
+      - ./data/apt-metrics:/data/apt-metrics
+    command:
+      - --collector.os
+      - "--collector.textfile.directory=/data/apt-metrics"
     logging: *default-logging
     restart: always
