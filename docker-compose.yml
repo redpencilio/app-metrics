@@ -25,6 +25,22 @@ services:
       - /dev/kmsg:/dev/kmsg
     logging: *default-logging
     restart: always
+  apt-metrics:
+    image: redpencil/apt-metrics:0.1.0
+    volumes:
+      # Host apt/dpkg state (read-only)
+      - /var/lib/apt:/var/lib/apt:ro
+      - /var/lib/dpkg:/var/lib/dpkg:ro
+      - /etc/apt:/etc/apt:ro
+      - /var/cache/apt:/var/cache/apt:ro
+      # Reboot-required flag
+      - /var/run/:/host/var/run/:ro
+      # Shared textfile collector volume
+      - ./data/apt-metrics/:/var/lib/node_exporter/textfile_collector
+      # Persistent cache for CVE priority lookups (survives recreates)
+      - ./data/security-metrics-cache:/var/cache/security-updates-metrics
+    logging: *default-logging
+    restart: always
   exporter:
     image: quay.io/prometheus/node-exporter:v1.10.2
     pid: "host"
@@ -32,7 +48,9 @@ services:
       - /sys:/sys:ro
       - /dev/disk/:/dev/disk:ro
       - /etc/os-release:/etc/os-release:ro
+      - ./data/apt-metrics:/data/apt-metrics
     command:
       - --collector.os
+      - "--collector.textfile.directory=/data/apt-metrics"
     logging: *default-logging
     restart: always
