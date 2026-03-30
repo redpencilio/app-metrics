@@ -1,0 +1,13 @@
+services:
+  dispatcher:
+    ports:
+      - "80:80"
+    restart: "no"
+  cadvisor:
+    ports:
+      - "8080:8080"
+    restart: "no"
+  apt-metrics:
+    restart: "no"
+  exporter:
+    restart: "no"

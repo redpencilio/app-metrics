@@ -7,6 +7,7 @@ Application providing server and container metrics that can be scraped by Promet
 Clone the repository and start the application using docker compose
 ```bash
 git clone https://github.com/redpencilio/app-metrics.git
+cd app-metrics
 docker compose up -d
 ```
 
