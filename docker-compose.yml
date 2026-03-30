@@ -13,16 +13,11 @@ services:
       - "logging=true"
     restart: always
     logging: *default-logging
-  cadvisor:
-    image: ghcr.io/google/cadvisor:0.56.2
+  docker-metrics:
+    image: redpencil/docker-prom-metrics:0.1.0
     volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-      - /dev/disk/:/dev/disk:ro
-    devices:
-      - /dev/kmsg:/dev/kmsg
+      - ./data/docker-metrics:/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     logging: *default-logging
     restart: always
   apt-metrics:
@@ -48,9 +43,11 @@ services:
       - /sys:/sys:ro
       - /dev/disk/:/dev/disk:ro
       - /etc/os-release:/etc/os-release:ro
+      - ./data/docker-metrics:/data/docker-metrics
       - ./data/apt-metrics:/data/apt-metrics
     command:
       - --collector.os
-      - "--collector.textfile.directory=/data/apt-metrics"
+      - --collector.textfile.directory=/data/docker-metrics
+      - --collector.textfile.directory=/data/apt-metrics
     logging: *default-logging
     restart: always

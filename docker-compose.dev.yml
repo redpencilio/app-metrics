@@ -3,9 +3,7 @@ services:
     ports:
       - "80:80"
     restart: "no"
-  cadvisor:
-    ports:
-      - "8080:8080"
+  docker-metrics:
     restart: "no"
   apt-metrics:
     restart: "no"
