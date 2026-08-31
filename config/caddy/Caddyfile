@@ -1,0 +1,19 @@
+# Standalone TLS + basic auth for app-metrics.
+# Used together with docker-compose.standalone.yml.
+#
+# The domain and password hash are read from environment variables set in the
+# override file (METRICS_DOMAIN, BASIC_AUTH_USER, BASIC_AUTH_HASH), so this file does not need
+# to be edited. Defaults are provided for local testing only.
+#
+# Generate a bcrypt hash for the Prometheus user:
+#   docker compose run --rm caddy caddy hash-password
+
+{$METRICS_DOMAIN:metrics.example.org} {
+	tls internal
+
+	basic_auth {
+		{$BASIC_AUTH_USER:admin} {$BASIC_AUTH_HASH:replace-with-hash-from-caddy-hash-password}
+	}
+
+	reverse_proxy dispatcher:80
+}
