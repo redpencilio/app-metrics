@@ -1,0 +1,13 @@
+services:
+  dispatcher:
+    environment:
+      VIRTUAL_HOST: "your.host.here"
+      LETSENCRYPT_HOST: "your.host.here"
+      LETSENCRYPT_EMAIL: "your-email@example.net"
+    networks:
+      - proxy
+      - default
+networks:
+  proxy:
+    external: true
+    name: letsencrypt_default

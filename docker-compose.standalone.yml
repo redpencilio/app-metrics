@@ -1,0 +1,32 @@
+# Standalone deployment: Caddy terminates TLS with a self-signed certificate
+# (tls internal) and applies basic auth in front of the dispatcher. Use this
+# when the metrics host has its own domain and is reached directly (no shared
+# nginx-proxy in front).
+#
+# Activate by copying to the auto-loaded override file:
+#   cp docker-compose.standalone.yml docker-compose.override.yml
+#
+# Note: runs metrics on port 9100
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  caddy:
+    image: caddy:2
+    ports:
+      - "9100:443"
+    environment:
+      METRICS_DOMAIN: "metrics.example.org"
+      BASIC_AUTH_USER: "admin"
+      BASIC_AUTH_HASH: "replace-with-hash-from-caddy-hash-password"
+    volumes:
+      - ./config/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./data/caddy/data:/data
+      - ./data/caddy/config:/config
+    depends_on:
+      - dispatcher
+    restart: always
+    logging: *default-logging
